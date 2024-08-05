@@ -59,7 +59,7 @@ impl FloatRealFft {
     /// # Panics
     ///
     /// This function panics if input or output has a length not equal to the size of this FFT.
-    pub fn run(&self, input: &[f32], output: &mut [f32]) {
+    pub fn run(&self, input: &mut [f32], output: &mut [f32]) {
         self.run_inner(input, output, Direction::Forward);
     }
     /// Runs an inverse FFT on a set of values, placing the results in output
@@ -67,11 +67,11 @@ impl FloatRealFft {
     /// # Panics
     ///
     /// This function panics if input or output has a length not equal to the size of this FFT.
-    pub fn run_inverse(&self, input: &[f32], output: &mut [f32]) {
+    pub fn run_inverse(&self, input: &mut [f32], output: &mut [f32]) {
         self.run_inner(input, output, Direction::Inverse);
     }
 
-    fn run_inner(&self, input: &[f32], output: &mut [f32], direction: Direction) {
+    fn run_inner(&self, input: &mut [f32], output: &mut [f32], direction: Direction) {
         // Check length
         check_fft_size(self.0.fftLenRFFT, input.len());
         check_fft_size(self.0.fftLenRFFT, output.len());
@@ -79,7 +79,7 @@ impl FloatRealFft {
         unsafe {
             cmsis_dsp_sys::arm_rfft_fast_f32(
                 &self.0 as *const _ as *mut _,
-                input.as_ptr() as *mut _,
+                input.as_mut_ptr(),
                 output.as_mut_ptr(),
                 direction as _,
             );
